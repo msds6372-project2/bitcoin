@@ -22,3 +22,19 @@
 
 # <a name="problem-statement"></a>Problem Statement
 > Develop a time series model based on an observed set of explanatory variables that can be utilized to predict future price of Bitcoin.
+
+# <a name="constraints"></a>Constraints and Limitations
+> Add text here
+
+# <a name="descriptions"></a>Data set and variable descriptions
+> Add data set description here
+
+| Variable | Variable Type | Summary |
+| :------: | :-----------: | :-----: |
+| Date | | |
+| Open | | |
+| High | | |
+| Low | | |
+| Close | | |
+| Volume | | |
+| Market Cap | | |
