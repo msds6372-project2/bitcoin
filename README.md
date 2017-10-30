@@ -1,4 +1,4 @@
-# Time series analysis of bitcoin
+# Time Series Analysis of Bitcoin
 ## MSDS 6372 - Section 403
 ## Project 2
 
