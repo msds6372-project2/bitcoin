@@ -1,0 +1,228 @@
+---
+title: "MSDS 6372 - Project 2"
+author:
+- Jostein Barry-Straume
+- Laura Ludwig
+- David Tran
+date: "11/1/2017"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Time Series Analysis of Bitcoin
+## MSDS 6372 - Section 403
+## Project 2
+
+[Data Science @ Southern Methodist University](https://datascience.smu.edu/)
+
+![Source: bitcoin.com](/Users/Jostein/Grad School/SMU/6372/project2/bitcoin/images/readme1.png) 
+
+# Table of Contents
+* [Team Members](#team-members)
+* [Introduction](#introduction)
+* [Problem Statement](#problem-statement)
+* [Constraints and Limitations](#constraints)
+* [Data Set Description](#description)
+* [Exploratory Data Analysis](#eda)
+* [Variable Screening](#variable-screening)
+* [Model Selection](#model-selection)
+* [Serial Correlation](#serial-correlation)
+* [Conclusion](#conclusion)
+* [Appendix](#appendix)
+
+# <a name="team-members"></a>Team Members
+* [Jostein Barry-Straume](https://github.com/josteinstraume)
+* [Laura Ludwig](https://github.com/laurajludwig)
+* [David Tran](https://github.com/zdtranz)
+
+# <a name="introduction"></a>Introduction
+> Cryptocurrency is a digit currency and acts as a medium for exchanges/transactions. Cryptocurrencies are decentralized, which means it is not processed by any banking system and goes straight to the consumers. The transactions are posted on an online ledger for transparency. Users’ identities are protected through an encryption key, which is a feature that Bitcoin has.
+> Bitcoin is one of the popular choices of cryptocurrency. Since its introduction into the market in 2009, it has drastically increased and decreased in value. The analysis below will offer insights on the characteristics of the cryptocurrency and its projected value and trend.
+
+# <a name="problem-statement"></a>Problem Statement
+> Develop a time series model based on an observed set of explanatory variables that can be utilized to predict future price of Bitcoin.
+
+# <a name="constraints"></a>Constraints and Limitations
+> Add text here
+
+# <a name="description"></a>Data Set Description
+> Add data set description here
+
+| Variable | Variable Type | Summary |
+| :------: | :-----------: | :-----: |
+| Date | | |
+| Open | | |
+| High | | |
+| Low | | |
+| Close | | |
+| Volume | | |
+| Market Cap | | |
+| Time | | |
+
+```{r include = FALSE}
+# Load lubridate package to convert dates from factor to date class
+library(lubridate)
+library(reshape2)
+library(ggplot2)
+library(forecast)
+library(DescTools)
+
+# File path of the data set
+path <- "/Users/Jostein/Grad School/SMU/6372/project2/bitcoin/data/bitcoin_price.csv"
+
+# Read in the CSV file of the data set
+bitcoin <- read.csv(path, header = TRUE)
+
+# Create new variable time via Lubridate, then order data set by ascending time
+bitcoin$Time <- mdy(bitcoin$Date)
+bitcoin <- bitcoin[order(bitcoin$Time),]
+```
+
+> Snapshot of the data set
+
+```{r echo = FALSE}
+str(bitcoin)
+dim(bitcoin)
+head(bitcoin)
+```
+
+> The above output shows the structure, dimension, and head of the data set. There are 1,630 observations with 8 explanatory variables.
+
+> Summary statistics of daily closing price of bitcoin:
+
+```{r echo = FALSE}
+summary(bitcoin$Close)
+```
+
+# <a name="eda"></a>Exploratory Data Analysis
+```{r echo = FALSE}
+# Line plot of daily closing price of bitcoin
+# Source: https://stackoverflow.com/questions/9053437/r-plot-with-an-x-time-axis-how-to-force-the-ticks-labels-to-be-the-days
+plot(bitcoin$Close, type = "l", ylab = "Close Prices (USD)", main = "Daily Closing Price of Bitcoin", xaxt = "n")
+#axis.POSIXct(1, bitcoin$Date, format = "%m/%d/%y")
+#axis.Date(1, bitcoin$Time)
+```
+
+> The above plot reflects the daily closing price of bitcoin from to April 28th, 2013 to October 3rd, 2017. Although there appears to be no pattern in the change of the closing price, a general increase in price over time is apparent. Increasing variance over time necessitates transformation of the original data.
+
+```{r include = FALSE}
+# Transformation appears to be needed
+bitcoin$Log_Close <- log(bitcoin$Close)
+bitcoin$Sqrt_Close <- sqrt(bitcoin$Close)
+
+# How do we get to stationary?
+# First differences for original and transformed data sets
+diff1 <- diff(bitcoin$Close, lag = 1)
+logDiff1 <- diff(bitcoin$Log_Close, lag = 1)
+sqrtDiff1 <- diff(bitcoin$Sqrt_Close, lag = 1)
+```
+
+```{r echo = FALSE}
+fitClose <- lm(Close ~ Time, data = bitcoin)
+fitLogClose <- lm(Log_Close ~ Time, data = bitcoin)
+fitSqrtClose <- lm(Sqrt_Close ~ Time, data = bitcoin)
+par(mfrow = c(3, 3))
+hist(bitcoin$Close, main = "Daily Closing Price")
+plot(fitClose, which = 1:2)
+hist(bitcoin$Log_Close, main = "Daily Logged Closing Price")
+plot(fitLogClose, which = 1:2)
+hist(bitcoin$Sqrt_Close, main = "Daily Square-Root Closing Price")
+plot(fitSqrtClose, which = 1:2)
+```
+
+> The above diagnostic plots confirm the need for transformation, as well as give insight into which transformation is most appropriate. The histograms of both the original data and logged data are heavily right skewed, with the former to a larger degree. Additionally, the Q-Q plots for the original data and logged data venture far of the path of diagonal line. In contrast, the logged data displays a normal distribution for its histogram, as well as a fairly good Q-Q plot. The tail ends of the logged Q-Q plot indicate some skewness at both ends, which the corresponding histogram supports. However, the size of our data set should ease any concern we might have. The residual diagnostic plot of the logged data reflects non-constant variance. This will be addressed by taking the first degree difference of the logged daily closing price.
+
+```{r echo = FALSE}
+par(mfrow = c(2, 1))
+plot(diff1, type = "l", xlab = "Time", ylab = "Difference", main = "First Difference for Original Data")
+plot(logDiff1, type = "l", xlab = "Time", ylab = "Difference", main = "First Difference for Logged Data")
+```
+
+> The variance of the first difference between the original and logged data are vastly different. In the original data the increasing variance as time goes one is visually clear, whereas the variance of the logged data is reasonably constant with no apparent patterns.
+
+# <a name="variable-screening"></a>Variable Screening
+```{r echo = FALSE}
+# Change variables from factors and date into numeric class
+bitcoin$Time_Posix <- as.POSIXct(bitcoin$Time, format="%Y-%m-%d %H:%M:%S")
+bitcoin$Time_Posix <- as.numeric(bitcoin$Time_Posix)
+bitcoin$Volume_Numeric <- as.numeric(bitcoin$Volume)
+bitcoin$Market.Cap_Numeric <- as.numeric(bitcoin$Market.Cap)
+cormat <- round(cor(bitcoin[sapply(bitcoin, is.numeric)]), 2)
+
+# Get Lower triangle of the correlation matrix
+get_lower_tri <- function(cormat) {
+  cormat[upper.tri(cormat)] <- NA
+  return(cormat)
+}
+
+# Get upper triangle of the correlation matrix
+get_upper_tri <- function(cormat) {
+  cormat[lower.tri(cormat)] <- NA
+  return(cormat)
+}
+
+# Organize the correlation matrix
+reorder_cormat <- function(cormat){
+  # Use correlation between variables as distance
+  dd <- as.dist((1-cormat)/2)
+  hc <- hclust(dd)
+  cormat <-cormat[hc$order, hc$order]
+}
+
+cormat <- reorder_cormat(cormat)
+upper_tri <- get_upper_tri(cormat)
+
+# Melt the correlation matrix
+melted_cormat <- melt(upper_tri, na.rm = TRUE)
+
+# Create a ggheatmap
+ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value))+
+  geom_tile(color = "white")+
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1,1), space = "Lab", 
+                       name="Pearson\nCorrelation") +
+  theme_minimal()+ # minimal theme
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 12, hjust = 1))+
+  coord_fixed()
+
+ggheatmap + 
+  geom_text(aes(Var2, Var1, label = value), color = "black", size = 4) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank(),
+    axis.ticks = element_blank(),
+    legend.justification = c(1, 0),
+    legend.position = c(0.6, 0.7),
+    legend.direction = "horizontal")+
+  guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
+                               title.position = "top", title.hjust = 0.5))
+```
+
+> The above heat map correlation matrix offers limited new comprehension of the bitcoin data set, but is still helpful nonetheless. The following variables are 100% colinear with each other: High, Low, Open, and Close. This makes sense as all of the said variables pertain to the price of bitcoin. To reduce redundancy, only the closing price of bitcoin will be utilized for a time series model. Moreover, the original and logged closing prices have strong positive correlations with time (R = 0.61, and R = 0.71 respectively). This suggests the need to address auto correlation issues. Volume of daily bitcoin trades has a weak positive correlation (R = 0.20) with logged closing price, and a moderate positive correlation (R = 0.38) with time. This suggests that as time goes on, the volume of trades increases and might have a impact on the closing price of bitcoin. Of note, the total market cap of mined bitcoins has a moderate positive correlation with logged closing prices. In other words, the total value of mined bitcoins possibly influences the closing price. 
+
+# <a name="model-selection"></a>Model Selection
+> Add model selection here
+
+# <a name="serial-correlation"></a>Serial Correlation
+```{r echo = FALSE}
+par(mfrow = c(2, 1))
+acf(logDiff1, main = "Autocorrelation Function of the First Differences")
+pacf(logDiff1, main = "Partial Autocorrelation Function of the First Differences")
+```
+
+> Add serial correlation here
+
+# <a name="Conclusion"></a>Conclusion
+> Add conclusion here
+
+# <a name="appendix"></a>Appendix
+> Add R code and pertinent graphs here

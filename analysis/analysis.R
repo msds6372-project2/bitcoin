@@ -3,6 +3,7 @@ library(lubridate)
 library(reshape2)
 library(ggplot2)
 library(forecast)
+library(DescTools)
 
 # File path of the data set
 path <- "/Users/Jostein/Grad School/SMU/6372/project2/bitcoin/data/bitcoin_price.csv"
@@ -45,6 +46,11 @@ plot(diff1, type = "l", xlab = "Time", ylab = "Difference", main = "First Differ
 plot(logDiff1, type = "l", xlab = "Time", ylab = "Difference", main = "First Difference for Logged Data")
 plot(sqrtDiff1, type = "l", xlab = "Time", ylab = "Difference", main = "First Difference for Square-root Data")
 
+# Diagnostic plots for first differences of square-root data
+fitSqrtClose <- lm(Log_Close ~ Time, bitcoin)
+par(mfrow = c(3, 2))
+plot(fitLogClose, which = 1:6)
+hist(bitcoin$Close)
 # Full and partial auto-correlation plots for first differences of square-root data
 par(mfrow = c(2, 1))
 acf(sqrtDiff1, main = "Auto-correlation Function of the First Differences")
@@ -59,3 +65,18 @@ plot(sqrtDiff2, type = "l", xlab = "Time", ylab = "Difference", main = "Second D
 acf(sqrtDiff2, main = "Auto-correlation Function of the Second Differences")
 pacf(sqrtDiff2, main = "Auto-correlation Function of the Second Differences")
 
+# Possible take on project, combine close prices with google trends
+# Leave for room for improvement to talk about in conclusion
+# trends <- read.csv(file = "/Users/Jostein/Grad School/SMU/6372/project2/bitcoin/data/google_trends_bitcoin.csv", header = TRUE)
+# newdata <- data.frame(diff1, trends)
+# model <- lm(diff1 ~ trends, data = newdata)
+
+
+# plot(model)
+dev.off()
+arima_fit <- auto.arima(bitcoin$Log_Close)
+plot(forecast(arima_fit))
+summary(arima_fit)
+
+hist(logDiff1, prob = T, col = "red")
+lines(density(logDiff1), lwd = 2)

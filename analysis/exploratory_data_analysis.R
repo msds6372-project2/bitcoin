@@ -68,6 +68,11 @@ summary(fitLogClose)
 # Correlation matrix heatmap
 # Source: http://www.sthda.com/english/wiki/ggplot2-quick-correlation-matrix-heatmap-r-software-and-data-visualization
 # Source: https://stackoverflow.com/questions/3571909/calculate-correlation-cor-for-only-a-subset-of-columns
+# Source: https://stackoverflow.com/questions/20077944/changing-dates-into-numeric-form-to-do-a-correlation
+bitcoin$Time_Posix <- as.POSIXct(bitcoin$Time, format="%Y-%m-%d %H:%M:%S")
+bitcoin$Time_Posix <- as.numeric(bitcoin$Time_Posix)
+bitcoin$Volume_Numeric <- as.numeric(bitcoin$Volume)
+bitcoin$Market.Cap_Numeric <- as.numeric(bitcoin$Market.Cap)
 cormat <- round(cor(bitcoin[sapply(bitcoin, is.numeric)]), 2)
 head(cormat)
 
@@ -84,22 +89,58 @@ get_upper_tri <- function(cormat) {
 }
 
 # Put helper functions to use
-upper_tri <- get_upper_tri(cormat)
-upper_tri
+# upper_tri <- get_upper_tri(cormat)
+# upper_tri
 
 # Melt the correlation matrix
-melted_cormat <- melt(upper_tri, na.rm = TRUE)
-head(melted_cormat)
+# melted_cormat <- melt(upper_tri, na.rm = TRUE)
+# head(melted_cormat)
 
-# Build the heatmap
-ggplot(data = melted_cormat, aes(Var2, Var1, fill = value))+
+# Order the correlation matrix based
+reorder_cormat <- function(cormat){
+  # Use correlation between variables as distance
+  dd <- as.dist((1-cormat)/2)
+  hc <- hclust(dd)
+  cormat <-cormat[hc$order, hc$order]
+}
+
+cormat <- reorder_cormat(cormat)
+upper_tri <- get_upper_tri(cormat)
+# Melt the correlation matrix
+melted_cormat <- melt(upper_tri, na.rm = TRUE)
+# Create a ggheatmap
+ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value))+
   geom_tile(color = "white")+
-  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0, limit = c(-1,1), space = "Lab", name="Pearson\nCorrelation")+
-  theme_minimal()+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 12, hjust = 1))+
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1,1), space = "Lab", 
+                       name="Pearson\nCorrelation") +
+  theme_minimal()+ # minimal theme
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+                                   size = 12, hjust = 1))+
   coord_fixed()
 
+# Build the heatmap
+# ggheatmap <- ggplot(data = melted_cormat, aes(Var2, Var1, fill = value))+
+#   geom_tile(color = "white")+
+#   scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0, limit = c(-1,1), space = "Lab", name="Pearson\nCorrelation")+
+#   theme_minimal()+
+#   theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 12, hjust = 1))+
+#   coord_fixed()
 
+ggheatmap + 
+  geom_text(aes(Var2, Var1, label = value), color = "black", size = 4) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank(),
+    axis.ticks = element_blank(),
+    legend.justification = c(1, 0),
+    legend.position = c(0.6, 0.7),
+    legend.direction = "horizontal")+
+  guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
+                               title.position = "top", title.hjust = 0.5))
 
 
 timeseries <- ts(data=bitcoin$Log_Close, start=c(2013, 118), frequency=365)
@@ -109,3 +150,4 @@ plot(bitcoin$Open)
 
 arima_fit <- auto.arima(bitcoin$Close)
 plot(forecast(arima_fit))
+
