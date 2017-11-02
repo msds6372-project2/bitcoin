@@ -49,20 +49,20 @@ knitr::opts_chunk$set(echo = TRUE)
 > Develop a time series model based on an observed set of explanatory variables that can be utilized to predict future price of Bitcoin.
 
 # <a name="constraints"></a>Constraints and Limitations
-> Add text here
+> How the data set was collected, limited by date range (initial years)
 
 # <a name="description"></a>Data Set Description
 > Add data set description here
 
 | Variable | Variable Type | Summary |
 | :------: | :-----------: | :-----: |
-| Date | | |
-| Open | | |
-| High | | |
-| Low | | |
-| Close | | |
-| Volume | | |
-| Market Cap | | |
+| Date | DateTime | Date of the |
+| Open | Numeric | |
+| High | Numeric | |
+| Low | Numeric | |
+| Close | Numeric | |
+| Volume | Numeric | |
+| Market Cap | Numeric | |
 | Time | | |
 
 ```{r include = FALSE}
