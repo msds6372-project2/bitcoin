@@ -65,13 +65,6 @@ plot(sqrtDiff2, type = "l", xlab = "Time", ylab = "Difference", main = "Second D
 acf(sqrtDiff2, main = "Auto-correlation Function of the Second Differences")
 pacf(sqrtDiff2, main = "Auto-correlation Function of the Second Differences")
 
-# Possible take on project, combine close prices with google trends
-# Leave for room for improvement to talk about in conclusion
-# trends <- read.csv(file = "/Users/Jostein/Grad School/SMU/6372/project2/bitcoin/data/google_trends_bitcoin.csv", header = TRUE)
-# newdata <- data.frame(diff1, trends)
-# model <- lm(diff1 ~ trends, data = newdata)
-
-
 # plot(model)
 dev.off()
 arima_fit <- auto.arima(bitcoin$Log_Close)
@@ -80,3 +73,6 @@ summary(arima_fit)
 
 hist(logDiff1, prob = T, col = "red")
 lines(density(logDiff1), lwd = 2)
+
+
+plot(residuals(arima_fit))

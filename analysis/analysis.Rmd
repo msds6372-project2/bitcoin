@@ -6,8 +6,8 @@ author:
 - David Tran
 date: "11/1/2017"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
   word_document: default
 ---
 
@@ -207,22 +207,33 @@ ggheatmap +
                                title.position = "top", title.hjust = 0.5))
 ```
 
-> The above heat map correlation matrix offers limited new comprehension of the bitcoin data set, but is still helpful nonetheless. The following variables are 100% colinear with each other: High, Low, Open, and Close. This makes sense as all of the said variables pertain to the price of bitcoin. To reduce redundancy, only the closing price of bitcoin will be utilized for a time series model. Moreover, the original and logged closing prices have strong positive correlations with time (R = 0.61, and R = 0.71 respectively). This suggests the need to address auto correlation issues. Volume of daily bitcoin trades has a weak positive correlation (R = 0.20) with logged closing price, and a moderate positive correlation (R = 0.38) with time. This suggests that as time goes on, the volume of trades increases and might have a impact on the closing price of bitcoin. Of note, the total market cap of mined bitcoins has a moderate positive correlation with logged closing prices. In other words, the total value of mined bitcoins possibly influences the closing price. 
+> The above heat map correlation matrix offers limited new comprehension of the bitcoin data set, but is still helpful nonetheless. Volume of daily bitcoin trades has a weak positive correlation (R = 0.20) with logged closing price, and a moderate positive correlation (R = 0.38) with time. This suggests that as time goes on, the volume of trades increases and might have a impact on the closing price of bitcoin. Of note, the total market cap of mined bitcoins has a moderate positive correlation with logged closing prices. In other words, the total value of mined bitcoins possibly influences the closing price.
+
+> The original and logged closing prices have strong positive correlations with time (R = 0.61, and R = 0.71 respectively). This suggests the need to address auto correlation issues. Moreover, the following variables are 100% colinear with each other: High, Low, Open, and Close. This makes sense as all of the said variables pertain to the price of bitcoin. To reduce redundancy, only the closing price of bitcoin will be utilized for a time series model. 
 
 # <a name="model-selection"></a>Model Selection
-> Add model selection here
+> Analysis of the daily closing price of bitcoin can now be carried out with the following model:
+
+```{r echo = FALSE}
+# https://www.otexts.org/fpp/8/7
+arima_fit <- auto.arima(bitcoin$Log_Close)
+summary(arima_fit)
+par(mfrow = c(1,1))
+plot(forecast(arima_fit))
+```
 
 # <a name="serial-correlation"></a>Serial Correlation
 ```{r echo = FALSE}
 par(mfrow = c(2, 1))
-acf(logDiff1, main = "Autocorrelation Function of the First Differences")
-pacf(logDiff1, main = "Partial Autocorrelation Function of the First Differences")
+acf(residuals(arima_fit), main = "Autocorrelation Function of ARIMA model")
+pacf(residuals(arima_fit), main = "Partial Autocorrelation Function of ARIMA model")
+Box.test(residuals(arima_fit))
 ```
 
 > Add serial correlation here
 
 # <a name="Conclusion"></a>Conclusion
-> Add conclusion here
+> Possible take on project, combine close prices with google trends.
 
 # <a name="appendix"></a>Appendix
 > Add R code and pertinent graphs here

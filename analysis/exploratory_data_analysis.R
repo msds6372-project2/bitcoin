@@ -143,11 +143,18 @@ ggheatmap +
                                title.position = "top", title.hjust = 0.5))
 
 
-timeseries <- ts(data=bitcoin$Log_Close, start=c(2013, 118), frequency=365)
+timeseries <- ts(data=bitcoin$Close, start=c(2013, 118), frequency=365)
+dev.off()
 plot(timeseries)
 
 plot(bitcoin$Open)
 
 arima_fit <- auto.arima(bitcoin$Close)
 plot(forecast(arima_fit))
+
+# Possible take on project, combine close prices with google trends
+# Leave for room for improvement to talk about in conclusion
+# trends <- read.csv(file = "/Users/Jostein/Grad School/SMU/6372/project2/bitcoin/data/google_trends_bitcoin.csv", header = TRUE)
+# newdata <- data.frame(diff1, trends)
+# model <- lm(diff1 ~ trends, data = newdata)
 
