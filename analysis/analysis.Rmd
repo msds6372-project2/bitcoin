@@ -265,6 +265,9 @@ Box.test(residuals(forecast_arima_fit), type = "Ljung")
 > The Ljung-Box test allows for the examination of independence. With a resulting p-value of 0.7406, we fail to reject the null hypothesis that any group of autocorrelations of this time series data is zero. The data is plausible under the null hypothesis, so there is reason to believe that there is no autocorrelation.
 
 # <a name="Conclusion"></a>Conclusion
+> The time series analysis model above was developed to determine the relationship of the response variable of the Closing price of Bitcoin with the explanatory variables of Date, Open, High, Low, Volume, Market Cap, and Time. Based on our diagnostic plots, a log transformation on the data was performed to obtain a normal distribution of the data. In our explanatory data analysis, the closing price of Bitcoin did not appear to have a pattern but a general price increase was observed over time. It is expected that prices will generally increase as a positive linear relationship with time. In our variable screening, the correlation between volume of daily bitcoin trades and the logged closing price has a low positive correlation value (R = 0.20) and a moderate positive correlation (R = 0.38) with time. 
+
+> According to CoinDesk.com, the price of Bitcoin is $7,351.53 as of November 4th, 2017. Since the last closing price of our dataset, the price of Bitcoin has increased roughly 70%. With the analysis above, it is recommended that the forecasting should be used in a short-term range and kept up-to-date.
 
 ```{r echo = FALSE}
 df <- read.csv("/Users/Jostein/Grad School/SMU/6372/project2/bitcoin/data/conclusion_comparison.csv", header = TRUE)
