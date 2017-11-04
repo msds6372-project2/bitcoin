@@ -6,8 +6,8 @@ author:
 - David Tran
 date: "11/1/2017"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
   word_document: default
 ---
 
@@ -227,22 +227,35 @@ ggheatmap +
 > The original and logged closing prices have strong positive correlations with time (R = 0.61, and R = 0.71 respectively). This suggests the need to address auto correlation issues. Moreover, the following variables are 100% colinear with each other: High, Low, Open, and Close. This makes sense as all of the said variables pertain to the price of bitcoin. To reduce redundancy, only the closing price of bitcoin will be utilized for a time series model. 
 
 # <a name="model-selection"></a>Model Selection
-> Analysis of the daily closing price of bitcoin can now be carried out with the following model:
+> Analysis of the daily closing price of bitcoin can now be carried out. Instead of manually testing various models, the computer will select the best from a plethora of models based on their respective Akaike Information Criterion (AIC) value. Invoking the trace option in the auto.arima() function allows the user to see which exact models the computer is testing, as seen below:
 
 ```{r echo = FALSE}
-# https://www.otexts.org/fpp/8/7
-arima_fit <- auto.arima(bitcoin$Log_Close)
+myts <-ts(data = bitcoin$Log_Close, start = c(2013, 118), frequency = 365)
+arima_fit <- auto.arima(myts, ic = "aic", trace = TRUE)
 summary(arima_fit)
-par(mfrow = c(1,1))
-plot(forecast(arima_fit))
 ```
+
+> It appears that an ARIMA model with an order of (0, 1, 0) with a constant has been selected, which corresponds to a random walk model with drift. In other words, the best forecast for tomorrow's closing price of bitcoin is based on today's closing price plus a drift term. The general historical trend of bitcoin's closing price determine's the drift term.
+
+```{r echo = FALSE}
+forecast_arima_fit <- forecast(arima_fit, h = 75)
+plot(forecast_arima_fit, xlab = "Time", ylab = "Logged Closing Price")
+```
+
+> The above plot reflects the forecast of bitcoin's logged closing price for the next 75 days ahead of October 3rd, 2017. The predicted forecast values are represented as the blue line, and the drift terms appear as the grey fan shape around the forecasted values. The accuracy of the forecast model is best seen by testing it against already known observations. 
+
+```{r echo = FALSE}
+accuracy(f = forecast_arima_fit, x = myts[1546:1620])
+```
+
+> Fortunately, the accuracy() function in the forecast library of R provides a convenient vehicle in which to discern the precision of the forecast model. The above table output shows, among many things, the Root Mean Square Error (RMSE) for both the training and test set. In this scenario, the last 75 days of the data set were used as the test set. The training set had a RMSE value of 0.04296455, whereas the test set had a RMSE value of 0.27269486. So, the difference in the standard deviation of the residuals between the training and test set was 0.2297303.The fact that the test RMSE value is over 6 times greater than the training set may indicate the presene of overfitting. If so however, it may very well be the case that the best model is simply over-fit.
 
 # <a name="serial-correlation"></a>Serial Correlation
 ```{r echo = FALSE}
 par(mfrow = c(2, 1))
-acf(residuals(arima_fit), main = "Autocorrelation Function of ARIMA model")
-pacf(residuals(arima_fit), main = "Partial Autocorrelation Function of ARIMA model")
-Box.test(residuals(arima_fit))
+acf(residuals(forecast_arima_fit), main = "Autocorrelation Function of ARIMA model")
+pacf(residuals(forecast_arima_fit), main = "Partial Autocorrelation Function of ARIMA model")
+Box.test(residuals(forecast_arima_fit))
 ```
 
 > Add serial correlation here
