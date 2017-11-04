@@ -266,7 +266,11 @@ Box.test(residuals(forecast_arima_fit), type = "Ljung")
 > The Ljung-Box test allows for the examination of independence. With a resulting p-value of 0.7406, we fail to reject the null hypothesis that any group of autocorrelations of this time series data is zero. The data is plausible under the null hypothesis, so there is reason to believe that there is no autocorrelation.
 
 # <a name="Conclusion"></a>Conclusion
-> Possible take on project, combine close prices with google trends.
+> Add 1 week of actual vs forecast prices graph and comment on it here.
+
+> In particular, additional research into forecasting bitcoin prices would do well in focusing on exploring the nature between news about bitcoin and its respective price. The second chapter of this case study could combine Google search trends with the logged daily closing price to potentially construct a more accurate forecasting model.
+
+> Ways to improve the analysis include drilling down deeper into the sporatic changes in bitcoin's value. An hourly data set is available on Kaggle for analysis, but due to hardware and time constraints the daily data set was chosen. Moreover, employing additional data gathering techniques to capture the full scope of bitcoin's financial history could improve the forecasting of bitcoin's future financial value. However, it is unclear how helpful the initial years would be, as the current price of one bitcoin is many mangnitudes greater than its initial value in the beginning years.
 
 # <a name="appendix"></a>Appendix
 > Add R code and pertinent graphs here

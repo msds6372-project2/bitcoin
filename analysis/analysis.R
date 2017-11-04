@@ -138,3 +138,15 @@ modelTable <- matrix(c(line1, line2, line3, line4, line5,
                        "Auto.Arima(0, 1, 0)", arima_fit$sigma2, arima_fit$aic, arima_fit$bic), ncol = 4, byrow = TRUE)
 colnames(modelTable) <- c("Model", "Variance", "AIC", "SBC")
 modelTable
+
+comparePrices <- matrix(c("2017-Oct-04", 4215.10, exp(forecast_arima_fit$mean[1]),
+                          "2017-Oct-05", 4315.40, exp(forecast_arima_fit$mean[2]),
+                          "2017-Oct-06", 4371.00, exp(forecast_arima_fit$mean[3]),
+                          "2017-Oct-07", 4436.00, exp(forecast_arima_fit$mean[4]),
+                          "2017-Oct-08", 4613.10, exp(forecast_arima_fit$mean[5]),
+                          "2017-Oct-09", 4782.30, exp(forecast_arima_fit$mean[6]),
+                          "2017-Oct-10", 4777.00, exp(forecast_arima_fit$mean[7])), ncol = 3, byrow = TRUE)
+colnames(comparePrices) <- c("Date", "Actual", "Forecast")
+comparison <- as.data.frame(comparePrices)
+comparison$Date <- ymd(comparison$Date)
+class(comparison$Date)
