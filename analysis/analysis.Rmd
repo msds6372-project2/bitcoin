@@ -231,7 +231,7 @@ ggheatmap +
 
 ```{r echo = FALSE}
 myts <-ts(data = bitcoin$Log_Close, start = c(2013, 118), frequency = 365)
-arima_fit <- auto.arima(myts, ic = "aic", trace = TRUE)
+arima_fit <- auto.arima(myts, d = 1, ic = "aic", trace = TRUE)
 summary(arima_fit)
 ```
 
@@ -255,10 +255,15 @@ accuracy(f = forecast_arima_fit, x = myts[1546:1620])
 par(mfrow = c(2, 1))
 acf(residuals(forecast_arima_fit), main = "Autocorrelation Function of ARIMA model")
 pacf(residuals(forecast_arima_fit), main = "Partial Autocorrelation Function of ARIMA model")
-Box.test(residuals(forecast_arima_fit))
 ```
 
-> Add serial correlation here
+> Upon examination, both the ACF and PACF plots exhibit "white noise" behavior. In the ACF plot, residuals decay exponentially to zero after lag of zero. Likewise, the residuals in the PACF plot are either well within or near the two standard deviation boundary. These characteristics are indicative that the residuals are behaving like uncorrelated data, which in turn means that the data is behaving as if stationary under first degree differences.
+
+```{r echo = FALSE}
+Box.test(residuals(forecast_arima_fit), type = "Ljung")
+```
+
+> The Ljung-Box test allows for the examination of independence. With a resulting p-value of 0.7406, we fail to reject the null hypothesis that any group of autocorrelations of this time series data is zero. The data is plausible under the null hypothesis, so there is reason to believe that there is no autocorrelation.
 
 # <a name="Conclusion"></a>Conclusion
 > Possible take on project, combine close prices with google trends.
