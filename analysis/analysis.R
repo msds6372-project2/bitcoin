@@ -149,4 +149,30 @@ comparePrices <- matrix(c("2017-Oct-04", 4215.10, exp(forecast_arima_fit$mean[1]
 colnames(comparePrices) <- c("Date", "Actual", "Forecast")
 comparison <- as.data.frame(comparePrices)
 comparison$Date <- ymd(comparison$Date)
-class(comparison$Date)
+comparison$Actual <- as.numeric(comparison$Actual)
+comparison$Forecast <- as.numeric(comparison$Forecast)
+#class(comparison$Date)
+class(comparison$Actual)
+plot(x = comparison$Date, y = comparison$Actual, type = "l")
+lines(x = comparison$Date, y = comparison$Forecast, type = "l", col = "red")
+
+plot(x = comparePrices$Date, y = comparison$Actual, type = "l")
+lines(x = comparison$Date, y = comparison$Forecast, type = "l", col = "red")
+
+
+df <- read.csv("/Users/Jostein/Grad School/SMU/6372/project2/bitcoin/data/conclusion_comparison.csv", header = TRUE)
+df$Date <- ymd(df$Date)
+# Source: http://www.r-graph-gallery.com/119-add-a-legend-to-a-plot/
+plot(y = df$Actual, x = df$Date, col=rgb(0.2,0.4,0.1,0.7), type = "b", bty="l", lwd=3, pch=17, xlab = "Time", ylab = "Close Prices", main = "Daily Close Prices of Bitcoin")
+lines(y = df$Forecast, x = df$Date, col=rgb(0.8,0.4,0.1,0.7), lwd=3 , pch=19 , type="b")
+legend("topleft", 
+       legend = c("Actual", "Forecast"), 
+       col = c(rgb(0.2,0.4,0.1,0.7), 
+               rgb(0.8,0.4,0.1,0.7)), 
+       pch = c(17,19), 
+       bty = "n", 
+       pt.cex = 2, 
+       cex = 1.2, 
+       text.col = "black", 
+       horiz = F , 
+       inset = c(0.1, 0.1))
