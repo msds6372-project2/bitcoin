@@ -26,17 +26,21 @@
 > Develop a time series model based on an observed set of explanatory variables that can be utilized to predict future price of Bitcoin.
 
 # <a name="constraints"></a>Constraints and Limitations
-> Add text here
+> Bitcoin was created in 2009, and the available data in the dataset begins in April 2013. We are constrained by not seeing all of the history of this currency within the dataset.
+> The data is sourced from Kaggle, which is ultimately sourced from another site that tracks Bitcoin and other cryptocurrencies. There are limitations on the amount of metadata available from this source, particularly around how the market-level breakdown is sourced into one cohesive price in the Historical data.
+> There are some potentially confounding variables inherent in an analysis of Bitcoin. The market valuation is consistently changing on a daily basis with the mining of coins, and the nature of the market is highly dependent on supply and demand. There is also one owner who has 5% of the market share, whose actions may contribute to the behavior of the market prices.
+> There is some data missing, particularly in the Volume variable. The subsequent analysis does not rely on Volume due to lack of colinearity with this variable, but this may have been due to missing data.
 
-# <a name="descriptions"></a>Data set and variable descriptions
+# <a name="descriptions"></a>Data Set Description
 > Add data set description here
 
 | Variable | Variable Type | Summary |
 | :------: | :-----------: | :-----: |
-| Date | | |
-| Open | | |
-| High | | |
-| Low | | |
-| Close | | |
-| Volume | | |
-| Market Cap | | |
+| Date | DateTime | Date for summary info|
+| Open | Numeric | Opening market price for Bitcoin |
+| High | Numeric | Daily high price for Bitcoin |
+| Low | Numeric | Daily low price for Bitcoin |
+| Close | Numeric | Closing market price for Bitcoin |
+| Volume | Numeric | Total amount of Bitcoin available|
+| Market Cap | Numeric | Market Capitalization ([valuation](https://news.bitcoin.com/bitcoins-market-cap-not-think/) of the overall currency market)|
+| Time | DateTime| Conversion of original Date variable for analysis use|
