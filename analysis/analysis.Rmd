@@ -6,9 +6,9 @@ author:
 - David Tran
 date: "11/1/2017"
 output:
-  html_document: default
-  pdf_document: default
   word_document: default
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -285,7 +285,7 @@ legend("topleft",
        inset = c(0.1, 0.1))
 ```
 
-> Add 1 week of actual vs forecast prices graph and comment on it here.
+> To put the forecast model to test in a real world environment, actual closing prices of bitcoin were gathered to compare against the forecast model. Specifically, October 4th to October 10th were examined as it is a week ahead of where the data set leaves off. It appears the forecast model does fairly well within the time span of 3, but beyond that point the realized closing prices venture far from those of the forecast model. When looking at the larger trend up until today's current date, there have been significant exponential increases in the closing price of bitcoin. This recent trend may indicate that a new model may be necessary to capture the new behaviors of bitcoin itself.
 
 > In particular, additional research into forecasting bitcoin prices would do well in focusing on exploring the nature between news about bitcoin and its respective price. The second chapter of this case study could combine Google search trends with the logged daily closing price to potentially construct a more accurate forecasting model.
 
