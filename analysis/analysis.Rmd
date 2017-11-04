@@ -119,9 +119,8 @@ summary(bitcoin$High)
 ```{r echo = FALSE}
 # Line plot of daily closing price of bitcoin
 # Source: https://stackoverflow.com/questions/9053437/r-plot-with-an-x-time-axis-how-to-force-the-ticks-labels-to-be-the-days
-plot(bitcoin$Close, type = "l", ylab = "Close Prices (USD)", main = "Daily Closing Price of Bitcoin", xaxt = "n")
-#axis.POSIXct(1, bitcoin$Date, format = "%m/%d/%y")
-#axis.Date(1, bitcoin$Time)
+tsPlot <- ts(data = bitcoin$Close, start = c(2013, 118), frequency = 365)
+plot(tsPlot, type = "l", ylab = "Closing Price (USD)", main = "Daily Closing Price of Bitcoin", xlab = "Time", col = "blue")
 ```
 
 > The above plot reflects the daily closing price of bitcoin from to April 28th, 2013 to October 3rd, 2017. Although there appears to be no pattern in the change of the closing price, a general increase in price over time is apparent. Increasing variance over time necessitates transformation of the original data.
@@ -290,7 +289,7 @@ legend("topleft",
 
 > In particular, additional research into forecasting bitcoin prices would do well in focusing on exploring the nature between news about bitcoin and its respective price. The second chapter of this case study could combine Google search trends with the logged daily closing price to potentially construct a more accurate forecasting model.
 
-> Ways to improve the analysis include drilling down deeper into the sporatic changes in bitcoin's value. An hourly data set is available on Kaggle for analysis, but due to hardware and time constraints the daily data set was chosen. Moreover, employing additional data gathering techniques to capture the full scope of bitcoin's financial history could improve the forecasting of bitcoin's future financial value. However, it is unclear how helpful the initial years would be, as the current price of one bitcoin is many mangnitudes greater than its initial value in the beginning years.
+> Ways to improve the analysis include drilling down deeper into the sporatic changes in bitcoin's value. A bitcoin price per minute data set is available on Kaggle for analysis, but due to hardware and time constraints the daily data set was chosen. Moreover, employing additional data gathering techniques to capture the full scope of bitcoin's financial history could improve the forecasting of bitcoin's future financial value. However, it is unclear how helpful the initial years would be, as the current price of one bitcoin is many mangnitudes greater than its initial value in the beginning years.
 
 # <a name="appendix"></a>Appendix
 > Add R code and pertinent graphs here
