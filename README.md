@@ -16,7 +16,7 @@
 # <a name="team-members"></a>Team Members
 * [Jostein Barry-Straume](https://github.com/josteinstraume)
 * [Laura Ludwig](https://github.com/laurajludwig)
-* [David Tran](https://github.com/zdtranz)
+* [David Tran](https://github.com/davidtran20)
 
 # <a name="introduction"></a>Introduction
 > Cryptocurrency is a digit currency and acts as a medium for exchanges/transactions. Cryptocurrencies are decentralized, which means it is not processed by any banking system and goes straight to the consumers. The transactions are posted on an online ledger for transparency. Users’ identities are protected through an encryption key, which is a feature that Bitcoin has.
